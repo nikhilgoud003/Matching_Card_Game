@@ -54,3 +54,57 @@ class _CardMatchingGameState extends State<CardMatchingGame> {
     initializeGame();
     startTimer();
   }
+ void initializeGame() {
+    List<String> icons = [
+      '🐶',
+      '🐱',
+      '🐭',
+      '🐹',
+      '🐰',
+      '🦊',
+      '🐻',
+      '🐼',
+      '🐨',
+      '🦁',
+      '🐯',
+      '🐮'
+    ];
+
+    int totalPairs = (gridSize * gridSize) ~/ 2;
+    if (icons.length < totalPairs) {
+      throw Exception('Not enough icons to populate the grid.');
+    }
+
+    cards = [];
+    for (int i = 0; i < totalPairs; i++) {
+      cards.add(CardModel(front: icons[i], back: '■'));
+      cards.add(CardModel(front: icons[i], back: '■'));
+    }
+    cards.shuffle();
+    selectedCards = [];
+    isBusy = false;
+  }
+
+  void startTimer() {
+    timeElapsed = 0;
+    isTimerActive = true;
+    timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        if (isTimerActive) {
+          timeElapsed++;
+        }
+      });
+    });
+  }
+
+  void pauseTimer() {
+    setState(() {
+      isTimerActive = false;
+    });
+  }
+
+  void resumeTimer() {
+    setState(() {
+      isTimerActive = true;
+    });
+  }
