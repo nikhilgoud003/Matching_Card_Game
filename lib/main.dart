@@ -46,7 +46,7 @@ class _CardMatchingGameState extends State<CardMatchingGame> {
   int timeElapsed = 0;
   bool isTimerActive = true;
 
-  final int gridSize = 4; // Change grid size here
+  final int gridSize = 4;
 
   @override
   void initState() {
@@ -121,7 +121,7 @@ class _CardMatchingGameState extends State<CardMatchingGame> {
 
     if (selectedCards.length == 2) {
       isBusy = true;
-      pauseTimer(); // Pause timer while checking cards
+      pauseTimer();
 
       await Future.delayed(Duration(milliseconds: 800));
 
@@ -129,16 +129,14 @@ class _CardMatchingGameState extends State<CardMatchingGame> {
         setState(() {
           cards[selectedCards[0]].isFaceUp = false;
           cards[selectedCards[1]].isFaceUp = false;
-          score =
-              math.max(0, score - 5); // Deduct points for mismatch (minimum 0)
+          score = math.max(0, score - 5);
         });
       } else {
         setState(() {
           cards[selectedCards[0]].isMatched = true;
           cards[selectedCards[1]].isMatched = true;
-          score += 10; // Earn points for match
+          score += 10;
 
-          // Bonus points for quick matches
           if (timeElapsed < 30) {
             score += 5;
           }
@@ -147,14 +145,13 @@ class _CardMatchingGameState extends State<CardMatchingGame> {
 
       selectedCards.clear();
       isBusy = false;
-      resumeTimer(); // Resume timer after checking
+      resumeTimer();
     }
 
     if (cards.every((card) => card.isMatched)) {
-      pauseTimer(); // Pause timer when the game is won
-      timer.cancel(); // Stop the timer
+      pauseTimer();
+      timer.cancel();
 
-      // Calculate star rating based on time and score
       int stars = 1;
       if (score > 80 && timeElapsed < 60) {
         stars = 3;
@@ -233,6 +230,108 @@ class _CardMatchingGameState extends State<CardMatchingGame> {
     setState(() {
       initializeGame();
       startTimer();
-      score = 0; // Reset score
+      score = 0;
     });
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Animal Card Matching Game'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsets.all(16.0),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: gridSize,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+              ),
+              itemCount: cards.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () => flipCard(index),
+                  child: Card(
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    color: cards[index].isFaceUp ? Colors.white : Colors.black,
+                    child: Center(
+                      child: Text(
+                        cards[index].isFaceUp
+                            ? cards[index].front
+                            : cards[index].back,
+                        style: TextStyle(
+                          fontSize: 30.0,
+                          color: cards[index].isFaceUp
+                              ? Colors.black
+                              : Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
+            color: Colors.blue.shade800,
+            padding:
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('SCORE',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white70)),
+                    Text('$score',
+                        style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('TIME',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white70)),
+                    Row(
+                      children: [
+                        Icon(Icons.timer, color: Colors.white),
+                        SizedBox(width: 4),
+                        Text('$timeElapsed s',
+                            style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white)),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+}
