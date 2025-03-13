@@ -30,3 +30,24 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+class CardMatchingGame extends StatefulWidget {
+  @override
+  _CardMatchingGameState createState() => _CardMatchingGameState();
+}
+
+class _CardMatchingGameState extends State<CardMatchingGame> {
+  late List<CardModel> cards;
+  late List<int> selectedCards;
+  late bool isBusy;
+  late Timer timer;
+  int score = 0;
+  int timeElapsed = 0;
+
+  final int gridSize = 4;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeGame();
+    startTimer();
+  }
