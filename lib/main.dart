@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
+import 'dart:math' as math;
 
 void main() => runApp(MyApp());
 
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 class CardMatchingGame extends StatefulWidget {
   @override
   _CardMatchingGameState createState() => _CardMatchingGameState();
@@ -42,8 +44,9 @@ class _CardMatchingGameState extends State<CardMatchingGame> {
   late Timer timer;
   int score = 0;
   int timeElapsed = 0;
+  bool isTimerActive = true;
 
-  final int gridSize = 4;
+  final int gridSize = 4; // Change grid size here
 
   @override
   void initState() {
